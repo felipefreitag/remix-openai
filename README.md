@@ -1,10 +1,19 @@
 # Remix-OpenAI quickstart
 
-This is an implementation adapted from the official [OpenAI Node quickstart]()
+This is an implementation adapted from the official [OpenAI Node quickstart](https://github.com/openai/openai-quickstart-node)
 
 It uses:
+
 - [Remix](https://remix.run/docs)
-- [Netlify Functions Overview](https://docs.netlify.com/functions/overview)
+- [OpenAI Node] (https://github.com/openai/openai-node)
+
+You can choose whichever deployment target you want, this example uses [Netlify](https://docs.netlify.com) 
+
+## OpenAI account
+
+You'll need an [OpenAI API key](https://platform.openai.com/account/api-keys).
+
+Copy it to your `.env` file.
 
 ## Netlify Setup
 
@@ -47,10 +56,6 @@ netlify dev
 ```
 
 Open up [http://localhost:8888](http://localhost:8888), and you're ready to go!
-
-### Adding Redirects and Rewrites
-
-To add redirects and rewrites, add them to the `netlify.toml` file or to the [\_app_redirects](_app_redirects) file. For more information about redirects and rewrites, see the [Netlify docs](https://docs.netlify.com/routing/redirects/).
 
 ### Serve your site locally
 
