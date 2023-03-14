@@ -1,6 +1,9 @@
-# Welcome to Remix!
+# Remix-OpenAI quickstart
 
-- [Remix Docs](https://remix.run/docs)
+This is an implementation adapted from the official [OpenAI Node quickstart]()
+
+It uses:
+- [Remix](https://remix.run/docs)
 - [Netlify Functions Overview](https://docs.netlify.com/functions/overview)
 
 ## Netlify Setup

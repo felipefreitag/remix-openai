@@ -12,7 +12,7 @@ const baseConfig =
 module.exports = {
   ...baseConfig,
   ignoredRouteFiles: ["**/.*"],
-  // add your own custom config here if you want to.
-  //
-  // See https://remix.run/docs/en/v1/file-conventions/remix-config
+  future: {
+    unstable_tailwind: true,
+  },
 };
