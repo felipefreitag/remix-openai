@@ -1,11 +1,20 @@
-import { useState } from 'react'
+import { Form, useActionData } from '@remix-run/react'
+import type { ActionArgs } from '@remix-run/node'
+import { json } from '@remix-run/node'
+import { generate } from '~/generate.server'
+
+export async function action({ request }: ActionArgs) {
+  const body = await request.formData()
+  const animal = body.get('animal')
+  if (typeof animal !== 'string') {
+    return json({ error: { message: 'Animal is required' } })
+  }
+  const generated = await generate(animal)
+  return json(generated)
+}
 
 export default function Index() {
-  const [animalInput, setAnimalInput] = useState('')
-  const [result, setResult] = useState()
-
-  const styles = { main: '', icon: '', result: '' }
-  const onSubmit = () => {}
+  const data = useActionData<typeof action>()
 
   return (
     <div>
@@ -14,14 +23,12 @@ export default function Index() {
         <h3 className="mb-10 mt-4 text-3xl font-bold leading-10 text-slate-800">
           Name my pet
         </h3>
-        <form onSubmit={onSubmit} className="flex w-80 flex-col">
+        <Form method="post" className="flex w-80 flex-col">
           <input
             type="text"
             name="animal"
             placeholder="Enter an animal"
             className="mb-6 rounded border border-solid border-emerald-600 px-3 py-4 outline-emerald-600 placeholder:text-slate-400 placeholder:opacity-100"
-            value={animalInput}
-            onChange={(e) => setAnimalInput(e.target.value)}
           />
           <button
             type="submit"
@@ -29,8 +36,13 @@ export default function Index() {
           >
             Generate names
           </button>
-        </form>
-        <div className={styles.result}>{result}</div>
+        </Form>
+        {data && data?.result ? (
+          <div className="mt-10 w-80">{data.result}</div>
+        ) : null}
+        {data?.error ? (
+          <div className="mt-10 w-80 text-red-500">{data.error?.message}</div>
+        ) : null}
       </main>
     </div>
   )
