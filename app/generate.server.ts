@@ -18,54 +18,41 @@ Animal: ${capitalizedAnimal}
 Names:`
 }
 
-type Result = {
-  result: string
-}
-
-type Error = {
-  error: {
-    message: string
-  }
-}
-
-async function generate(animal: string): Promise<Result | Error> {
-  if (!configuration.apiKey) {
-    return {
-      error: {
-        message:
-          'OpenAI API key not configured, please follow instructions in README.md',
-      },
+export type Result<T> =
+  | {
+      success: true
+      value: T
     }
-  }
-
-  if (animal.trim().length === 0) {
-    return {
-      error: {
-        message: 'Please enter a valid animal',
-      },
+  | {
+      success: false
+      error: unknown
     }
-  }
 
+async function generate(animal: string): Promise<Result<string>> {
   try {
-    const completion = await openai.createCompletion({
-      model: 'text-davinci-003',
-      prompt: generatePrompt(animal),
-      temperature: 0.6,
-    })
-    return { result: completion.data.choices[0].text as string }
-  } catch (error: any) {
-    // Consider adjusting the error handling logic for your use case
-    if (error.response) {
-      console.error(error.response.status, error.response.data)
-      return { error: { message: error.response.data } }
-    } else {
-      console.error(`Error with OpenAI API request: ${error.message}`)
-      return {
-        error: {
-          message: 'An error occurred during your request.',
-        },
+    if (!configuration.apiKey)
+      throw 'OpenAI API key not configured, please follow instructions in README.md'
+
+    if (animal.trim().length === 0) throw 'Please enter a valid animal'
+
+    try {
+      const completion = await openai.createCompletion({
+        model: 'text-davinci-003',
+        prompt: generatePrompt(animal),
+        temperature: 0.6,
+      })
+      return { success: true, value: completion.data.choices[0].text as string }
+    } catch (error: any) {
+      if (error.response) {
+        console.error(error.response.status, error.response.data)
+        throw error.response.data
+      } else {
+        console.error(`Error with OpenAI API request: ${error.message}`)
+        throw 'An error occurred during your request.'
       }
     }
+  } catch (e) {
+    return { error: e, success: false }
   }
 }
 

@@ -1,20 +1,24 @@
-import { Form, useActionData } from '@remix-run/react'
+import { Form } from '@remix-run/react'
 import type { ActionArgs } from '@remix-run/node'
-import { json } from '@remix-run/node'
+import type { Result } from '~/generate.server'
 import { generate } from '~/generate.server'
+import { typedjson, useTypedActionData } from 'remix-typedjson'
 
 export async function action({ request }: ActionArgs) {
   const body = await request.formData()
   const animal = body.get('animal')
   if (typeof animal !== 'string') {
-    return json({ error: { message: 'Animal is required' } })
+    return typedjson({
+      success: false,
+      error: 'Animal is required',
+    } as Result<string>)
   }
   const generated = await generate(animal)
-  return json(generated)
+  return typedjson(generated)
 }
 
 export default function Index() {
-  const data = useActionData<typeof action>()
+  const data = useTypedActionData<typeof action>()
 
   return (
     <div>
@@ -37,11 +41,11 @@ export default function Index() {
             Generate names
           </button>
         </Form>
-        {data && data?.result ? (
-          <div className="mt-10 w-80">{data.result}</div>
+        {data?.success === true ? (
+          <div className="mt-10 w-80">{data.value}</div>
         ) : null}
-        {data?.error ? (
-          <div className="mt-10 w-80 text-red-500">{data.error?.message}</div>
+        {data?.success === false ? (
+          <div className="mt-10 w-80 text-red-500">{data?.error as string}</div>
         ) : null}
       </main>
     </div>
